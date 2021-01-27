@@ -1,7 +1,10 @@
 import os
 import re
 
-
+#
+#  HARUN ÖZDEMİR
+#  OSMAN MANTICI
+#
 # This class for read from file. For each word with file name
 class listnode:
 
@@ -19,7 +22,7 @@ class Node:
         self.parent = None
         # 36 alphanum character
         # 36 means that 26 alphabetic and 10 numeric character
-        self.children = [None] * 36
+        self.children = [None] * 46
         self.isEndOfWord = False
         # includingFiles includes file names that has this word.
         # For example a -> r -> a -> b -> a , and "araba" is word of Filex then...
@@ -129,9 +132,9 @@ class Trie:
         for i in occurencewords.keys():
             print(i)
             for b in occurencewords[i]:
-                positions += str(b)+" "
+                positions += str(b) + " "
             print(positions)
-            positions=""
+            positions = ""
 
     # this method finds common words in given files
     def commonwords(self, itr, files, toparent):
@@ -172,25 +175,24 @@ class Trie:
 
 
 #
-def read_file(wordlist):
-    for root, dirs, files in os.walk('sampleTextFiles'):
+def read_file(wordlist, filepath):
+    for root, dirs, files in os.walk(filepath):
         for file in files:
             # add words with filename
             # we want only alphanumeric characters
-            # AGA BURADA ALPHANUMERIC METHODU GIBI BI SEY YAPMAK DAHA IYI
-            # YAPABILIRSEN BAKARSIN
             wordlist.append(listnode(
                 list(open(root + "/" + file, 'r').read().replace(',', '').replace('.', "").replace("'", "")
-                     .replace('-', "").replace(';', "").lower().split()), file.split()))
+                     .replace('-', "").replace(';', "").replace('"', '').replace('!', '').replace('(', '')
+                     .replace(')', '').lower().split()), file.split()))
 
 
 if __name__ == '__main__':
-    # input for common words, we want common words these exists in these file
-    files = ["file1.txt", "file2.txt", "file3.txt", "file4.txt", "file5.txt"]
+    filepath = input("Please write pathname that includes text files\n")
+
     wordlist = list()
     toparent = list()
 
-    read_file(wordlist)
+    read_file(wordlist, filepath)
 
     root = Node("")
     trie = Trie(root)
@@ -201,21 +203,29 @@ if __name__ == '__main__':
             # we send word, its filename and positon of word to the insert method
             trie.insert(j, obje.filename, i)
 
-    # return true if har exists in any files.
-    # print(trie.search("har"))
-
+    startingwithinput = input("Please write a pattern for finding words which starting with it...\n")
     # it finds words starting with input.
-    trie.startingwith("har")
+    print("These files include words starting with " + startingwithinput + " \n"
+                                                                           "With positions (the word number)" + "\n")
+    trie.startingwith(startingwithinput)
+
     # it finds common words.
     # to parent is list for words. Then we will re-traverse on this list
     print()
+    # input for common words, we want common words these exists in these file
+    # files = ["file1.txt", "file2.txt", "file3.txt", "file4.txt", "file5.txt"]
+    files = input("Please write file names with whitespaces \n"
+                  "eg. file1.txt file2.txt file3.txt\n").split(" ")
+    if len(files) == 1:
+        print("You have to write at least 2 file names!!!")
+        exit()
     filenames = ""
     for i in files:
         filenames += str(i) + " "
     print("Common words in ", filenames, "are:")
     trie.commonwords(root, files, toparent)
 
-    # for common words. re-traverse on list as described above
+    # # for common words. re-traverse on list as described above
     toparent.reverse()
     common = ""
     for i in toparent:
