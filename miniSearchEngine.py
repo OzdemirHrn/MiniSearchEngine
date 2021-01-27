@@ -3,7 +3,6 @@ import re
 
 #
 #  HARUN ÖZDEMİR
-#  OSMAN MANTICI
 #
 # This class for read from file. For each word with file name
 class listnode:
